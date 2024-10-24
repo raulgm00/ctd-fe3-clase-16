@@ -1,37 +1,44 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import {routes} from "./utils/routes"
+import Card from './components/Card';
 
 //Esta pagina renderizará cada bebida de manera individual
 
 const Beer = () => {
-    const [beer, setBeer] = useState([])
+    const [loading, setLoading] = useState(true);
+    const params = useParams();
+    const [beer, setBeer] = useState({});
+    const navigate = useNavigate();
 
-    /** 
-    const getBeer = async()=>{
-        //Deberas completar este fetch con el parametro correspondiente
-        const res = await fetch(`https://api.punkapi.com/v2/beers/${}`)
-        const data = await res.json()
-        setBeer(data[0])
-    }
+    const getBeer = async () => {
+        const res = await fetch(`https://api.sampleapis.com/beers/ale/${params.id}`);
+        const data = await res.json();
+        setBeer(data);
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    };
 
-    useEffect(()=>{
-        getBeer()
-    })
-    */
-  
-  
-  return (
-    <div>
-        <h2>Cerveza numero...</h2>
-        <div className='card'>
-            <img src={beer.image_url} alt="beer-detail" />
-            <p>{beer.tagline}</p>
-            <p>{beer.description}</p>
-            <p>{beer.brewers_tips} </p>
+    useEffect(() => {
+        getBeer();
+    }, [params.id]);
+
+    return (
+        <div>
+            {loading ? (
+                "Hagamos de cuenta que soy un spinner..."
+            ) : (
+                <>
+                    <h2>Cerveza numero... {beer.id}</h2>
+                    <div className='card'>
+                        <Card key={beer.id} data={beer} />
+                    </div>
+                    
+                </>
+            )}
         </div>
-        <button>Go back</button>
-    </div>
+    );
+};
 
-  )
-}
-
-export default Beer
+export default Beer;
